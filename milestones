@@ -2,9 +2,9 @@
 
 Сущности:
 Картины:
-Поля:id, name, painter, year, type, price, genre, available
+Поля: painting_id, name, painter, year, type, price, genre, available
 Пользователи:
-Поля: id, name, email, bought_paintings, blacklist
+Поля: user_id, name, email, bought_paintings, blacklist
 
 Функционал:
 1. GET /paintings/ - получить список картин, фильтрация по жанрам, авторам

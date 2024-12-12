@@ -3,11 +3,12 @@ from fastapi import FastAPI
 app = FastAPI()
 
 class User:
-    def __init__(self, name, email, id = 0):
+    def __init__(self, user_id, name, email, bought_paintings, blacklist):
+        self.user_id = user_id
         self.name = name
         self.email = email
-        self.id = id
-        self.borrowed_books = []
+        self.bought_paintings = bought_paintings
+        self.blacklist = blacklist
 #Пользователи
 
 class Book:
