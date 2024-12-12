@@ -8,6 +8,7 @@ class User:
         self.email = email
         self.id = id
         self.borrowed_books = []
+#Пользователи
 
 class Book:
     def __init__(self, title, year, genre, id = 0):
@@ -16,6 +17,7 @@ class Book:
         self.year = year
         self.genre = genre
         self.id = id
+#Книги
 
 
 class BookRepository:
@@ -32,6 +34,7 @@ class BookRepository:
 
     def get_all_book(self):
         return self.books
+#Реп книг
 
 
 book_rep = BookRepository()

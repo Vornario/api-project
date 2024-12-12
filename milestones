@@ -1,0 +1,12 @@
+Проект на тему "Галерея"?
+Функционал:
+1. GET /paintings/ - получить список картин, фильтрация по жанрам, авторам
+2. GET /paintings/{painting_id} - инфо о картине по painting_id
+3. POST /paintings/ - добавить новую картину. передается JSON с данными картины
+4. PUT /painintgs/{painting_id} - обновить инфо по painting_id
+5. DELETE /painintgs/{painting_id} - удалить картину по painting_id
+6. GET /users/ - получить список всех пользователей
+7. POST /users/ - добавить нового пользователя
+8. POST /users/{user_id}/buy/{painting_id} - покупка пользователем картины. установка флага on_sale = False для картины и добавить в список проданных
+9. POST /users/{user_id}/rage/{painting_id} - пользователь яростно возвращает картину, on_sale = True, пользователь получает флаг blacklist = True, удалить картину из списка проданных
+10. GET /users/{user_id} - инфо о пользователе и список купленных (и возвращенных) им картин
