@@ -1,4 +1,11 @@
 Проект на тему "Галерея"?
+
+Сущности:
+Картины:
+Поля:id, name, painter, year, type, price, genre, available
+Пользователи:
+Поля: id, name, email, bought_paintings, blacklist
+
 Функционал:
 1. GET /paintings/ - получить список картин, фильтрация по жанрам, авторам
 2. GET /paintings/{painting_id} - инфо о картине по painting_id
