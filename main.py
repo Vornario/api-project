@@ -24,6 +24,14 @@ class Painting:
 
 #Книги
 
+class UserRep:
+    def __init__(self):
+        self.users = []
+        self.users.append(User(0, 'Vasya', 'vasya@mail.ru', [], False))
+        self.users.append(User(1, "Petya", "petya@mail.ru", 0, True))
+        for i in range(1, 10):
+            self.users.append(User(i, f'name {i}', f'mail {i}', [], False))
+
 
 class PaintingRepo:
     def __init__(self):
@@ -43,6 +51,7 @@ class PaintingRepo:
 
 
 painting_rep = PaintingRepo()
+uresr_rep = UserRep()
 
 @app.get('/paintings')
 def get_all_paintings():
@@ -52,3 +61,7 @@ def get_all_paintings():
 def add_painting(painting_name, painter, year, type, price, genre, available):
     painting_rep.add_painting(Painting(painting_name, painter, year, type, price, genre, available))
     return "ADDED"
+
+@app.get('/')
+def get_users():
+    return uresr_rep.users
