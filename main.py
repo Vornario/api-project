@@ -9,42 +9,46 @@ class User:
         self.email = email
         self.bought_paintings = bought_paintings
         self.blacklist = blacklist
+
 #Пользователи
 
-class Book:
-    def __init__(self, title, year, genre, id = 0):
-        self.available = True
-        self.title = title
+class Painting:
+    def __init__(self, painting_name, painter, year, type, price, genre, available):
+        self.painting_name = painting_name
+        self.painter = painter
         self.year = year
+        self.type = type
+        self.price = price
         self.genre = genre
-        self.id = id
+        self.available = available
+
 #Книги
 
 
-class BookRepository:
+class PaintingRepo:
     def __init__(self):
-        self.books = []
+        self.paintinigs = []
         self.increment_id = 0
-    def add_book(self, book):
-        book.id = self.increment_id
+    def add_painting(self, painting):
+        painting.id = self.increment_id
         self.increment_id += 1
-        self.books.append(book)
+        self.paintinigs.append(painting)
 
-    def delete_book(self, book):
-        self.books.remove(book)
+    def delete_painting(self, painting):
+        self.paintinigs.remove(painting)
 
-    def get_all_book(self):
-        return self.books
+    def get_all_paintings(self):
+        return self.paintinigs
 #Реп книг
 
 
-book_rep = BookRepository()
+painting_rep = PaintingRepo()
 
-@app.get('/books')
-def get_all_books():
-    return book_rep.get_all_book()
+@app.get('/paintings')
+def get_all_paintings():
+    return painting_rep.get_all_paintings()
 
-@app.get('/book/')
-def add_book(title, year, genre):
-    book_rep.add_book(Book(title, year, genre))
+@app.get('/painting/')
+def add_painting(painting_name, painter, year, type, price, genre, available):
+    painting_rep.add_painting(Painting(painting_name, painter, year, type, price, genre, available))
     return "ADDED"
