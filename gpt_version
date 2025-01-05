@@ -1,9 +1,7 @@
 from fastapi import FastAPI, HTTPException
-from typing import List, Optional
 
 app = FastAPI()
 
-# Models
 class User:
     def __init__(self, user_id, name, email, bought_paintings, blacklist):
         self.user_id = user_id
@@ -33,74 +31,10 @@ class UserRep:
             User(i, f'name {i}', f'mail{i}@mail.com', [], False) for i in range(2, 10)
         )
 
-    def get_all_users(self):
-        return self.users
-
-    def get_user(self, user_id):
-        return next((user for user in self.users if user.user_id == user_id), None)
-
-    def add_user(self, user):
-        self.users.append(user)
-
 class PaintingRepo:
     def __init__(self):
         self.paintings = []
         self.increment_id = 0
 
-    def add_painting(self, painting_name, painter, year, type, price, genre, available):
-        painting = Painting(self.increment_id, painting_name, painter, year, type, price, genre, available)
-        self.increment_id += 1
-        self.paintings.append(painting)
-        return painting
-
-    def delete_painting(self, painting_id):
-        self.paintings = [p for p in self.paintings if p.painting_id != painting_id]
-
-    def get_all_paintings(self):
-        return self.paintings
-
-    def get_painting(self, painting_id):
-        return next((painting for painting in self.paintings if painting.painting_id == painting_id), None)
-
 painting_rep = PaintingRepo()
 user_rep = UserRep()
-
-@app.get('/paintings')
-def get_all_paintings(genre: Optional[str] = None, painter: Optional[str] = None):
-    paintings = painting_rep.get_all_paintings()
-    if genre:
-        paintings = [p for p in paintings if p.genre == genre]
-    if painter:
-        paintings = [p for p in paintings if p.painter == painter]
-    return [vars(p) for p in paintings]
-
-@app.post('/paintings')
-def add_painting(painting_name: str, painter: str, year: int, type: str, price: float, genre: str, available: bool):
-    painting = painting_rep.add_painting(painting_name, painter, year, type, price, genre, available)
-    return {"message": "Painting added", "painting": vars(painting)}
-
-@app.get('/paintings/{painting_id}')
-def get_painting(painting_id: int):
-    painting = painting_rep.get_painting(painting_id)
-    if not painting:
-        raise HTTPException(status_code=404, detail="Painting not found")
-    return vars(painting)
-
-@app.delete('/paintings/{painting_id}')
-def delete_painting(painting_id: int):
-    painting = painting_rep.get_painting(painting_id)
-    if not painting:
-        raise HTTPException(status_code=404, detail="Painting not found")
-    painting_rep.delete_painting(painting_id)
-    return {"message": "Painting deleted successfully"}
-
-@app.get('/users')
-def get_users():
-    return [vars(user) for user in user_rep.get_all_users()]
-
-@app.get('/users/{user_id}')
-def get_user(user_id: int):
-    user = user_rep.get_user(user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return vars(user)
