@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from typing import List, Optional
 
 app = FastAPI()
 
@@ -11,7 +12,7 @@ class User:
         self.blacklist = blacklist
 
 class Painting:
-    def __init__(self, painting_id, painting_name, painter, year: int, type, price: int, genre, available):
+    def __init__(self, painting_id, painting_name, painter, year: int, type, price: int, genre, on_sale):
         self.painting_id = painting_id
         self.painting_name = painting_name
         self.painter = painter
@@ -19,7 +20,7 @@ class Painting:
         self.type = type
         self.price = price
         self.genre = genre
-        self.available = available
+        self.on_sale = on_sale
 
 class UserRep:
     def __init__(self):
@@ -59,7 +60,7 @@ def get_painting_by_id(picture_id:int):
                 "type": paintings.type,
                 "price": paintings.price,
                 "genre": paintings.genre,
-                "available": paintings.available
+                "on_sale": paintings.on_sale
             }
     raise HTTPException(status_code=404, detail="Painting not found")
 
@@ -74,7 +75,7 @@ def add_painting(painting_name: str, painter: str, year: int, type: str, price: 
         type=type,
         price=price,
         genre=genre,
-        available=True 
+        on_sale=True 
     )
     painting_rep.paintings.append(new_painting)
     return {
@@ -83,3 +84,92 @@ def add_painting(painting_name: str, painter: str, year: int, type: str, price: 
         "painting_name": new_painting.painting_name
     }
 
+@app.put("/paintings/{painting_id}", tags=["Картинки"], summary="Обновить инфо о картинке", description="Якшешмаш")
+def update_painting(painting_id: int, painting_name: str = None, painter: str = None, year: int = None, type: str = None, price: int = None, genre: str = None):
+    for painting in painting_rep.paintings:
+        if painting.painting_id == painting_id:
+            if painting_name is not None:
+                painting.painting_name = painting_name
+            if painter is not None:
+                painting.painter = painter
+            if year is not None:
+                painting.year = year
+            if type is not None:
+                painting.type = type
+            if price is not None:
+                painting.price = price
+            if genre is not None:
+                painting.genre = genre
+            return {
+                "message": "Painting updated successfully!",
+                "painting_id": painting.painting_id,
+                "painting_name": painting.painting_name
+            }
+    raise HTTPException(status_code=404, detail="Painting not found")
+
+
+@app.delete("/paintings/{painting_id}", tags=["Картинки"], summary="Удалить картинку по painting_id", description="Йахай")
+def delete_painting(painting_id: int):
+    for painting in painting_rep.paintings:
+        if painting.painting_id == painting_id:
+            painting_rep.paintings.remove(painting)
+            return {"message": "Painting deleted successfully!"}
+    raise HTTPException(status_code=404, detail="Painting not found")
+
+@app.get("/users/", tags=["Юзвери"], summary="Получить список всех пользователей", description="Пипипупу")
+def get_users():
+    return user_rep.users
+
+@app.post("/users/", tags=["Юзвери"], summary="Добавить пользователя", description="ГООООООООООООООООООООЛ!")
+def add_user(name: str, email: str):
+    new_id = len(user_rep.users)
+    new_user = User(new_id, name, email, [], False)
+    user_rep.users.append(new_user)
+    return {
+        "message": "New customer added successfully",
+        "user": {
+            "user_id": new_user.user_id,
+            "name": new_user.name,
+            "email": new_user.email,
+            "bought_paintings": new_user.bought_paintings,
+            "blacklist": new_user.blacklist
+        }
+    }
+
+@app.post("/users/{user_id}/buy/{painting_id}", tags=["Юзвери"], summary="Покупка пользователем картинки", description="Ай ай ай ай убили негра, убили")
+def user_buy(user_id: int, painting_id: int):
+    user = next((u for u in user_rep.users if u.user_id == user_id), None)
+    painting = next((p for p in painting_rep.paintings if p.painting_id == painting_id), None)
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    if painting is None:
+        raise HTTPException(status_code=404, detail="Painting not found")
+    if user.blacklist:
+        raise HTTPException(status_code=403, detail="User is blacklisted")
+    if not painting.on_sale:
+        raise HTTPException(status_code=400, detail="Painting is not on_sale")
+
+    painting.on_sale = False
+    user.bought_paintings.append(painting.painting_name)
+    return {
+        "message": "Painting purchased successfully!",
+        "user_id": user.user_id,
+        "painting_id": painting.painting_id
+    }
+
+@app.post("/users/{user_id}/rage/{painting_id}", tags=["Юзвери"], summary="Яростное возвращение картины", description="Пользователь яростно возвращает картину")
+def user_rage_return(user_id: int, painting_id: int):
+    user = next((u for u in user_rep.users if u.user_id == user_id), None)
+    painting = next((p for p in painting_rep.paintings if p.painting_id == painting_id), None)
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    if painting is None:
+        raise HTTPException(status_code=404, detail="Painting not found")
+    if painting_id not in user.bought_paintings:
+        raise HTTPException(status_code=400, detail="User has not purchased this painting")
+
+    painting.available = True
+    user.blacklist = True
+    user
