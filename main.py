@@ -84,6 +84,7 @@ def add_painting(painting_name: str, painter: str, year: int, type: str, price: 
         "painting_name": new_painting.painting_name
     }
 
+
 @app.put("/paintings/{painting_id}", tags=["Картинки"], summary="Обновить инфо о картинке", description="Якшешмаш")
 def update_painting(painting_id: int, painting_name: str = None, painter: str = None, year: int = None, type: str = None, price: int = None, genre: str = None):
     for painting in painting_rep.paintings:
@@ -173,3 +174,4 @@ def user_rage_return(user_id: int, painting_id: int):
     painting.available = True
     user.blacklist = True
     user
+
